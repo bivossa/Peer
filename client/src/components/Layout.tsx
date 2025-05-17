@@ -117,6 +117,12 @@ export default function Layout({ children }: LayoutProps) {
               label="Professionisti" 
               isActive={getIsActive("/professionals")} 
             />
+            <NavTab 
+              to="/clinical" 
+              icon="fa-image" 
+              label="Condizioni Cliniche" 
+              isActive={getIsActive("/clinical")} 
+            />
           </div>
         </div>
       </header>
@@ -153,6 +159,12 @@ export default function Layout({ children }: LayoutProps) {
               icon="fa-stethoscope" 
               label="Esperti" 
               isActive={getIsActive("/professionals")} 
+            />
+            <MobileNavButton 
+              to="/clinical" 
+              icon="fa-image" 
+              label="Cliniche" 
+              isActive={getIsActive("/clinical")} 
             />
           </div>
         </nav>
