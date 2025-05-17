@@ -176,3 +176,37 @@ export type InsertProfessionalSpecialty = z.infer<typeof insertProfessionalSpeci
 
 export type Professional = typeof professionals.$inferSelect;
 export type InsertProfessional = z.infer<typeof insertProfessionalSchema>;
+
+// Clinical condition categories
+export const clinicalCategories = pgTable("clinical_categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+});
+
+export const insertClinicalCategorySchema = createInsertSchema(clinicalCategories).omit({
+  id: true,
+});
+
+// Clinical conditions with images
+export const clinicalConditions = pgTable("clinical_conditions", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  symptoms: text("symptoms").notNull(),
+  categoryId: integer("category_id").notNull().references(() => clinicalCategories.id),
+  image: text("image").notNull(),
+  treatmentInfo: text("treatment_info"),
+  severity: text("severity").notNull(), // "low", "medium", "high"
+  commonness: text("commonness").notNull(), // "rare", "occasional", "common"
+});
+
+export const insertClinicalConditionSchema = createInsertSchema(clinicalConditions).omit({
+  id: true,
+});
+
+export type ClinicalCategory = typeof clinicalCategories.$inferSelect;
+export type InsertClinicalCategory = z.infer<typeof insertClinicalCategorySchema>;
+
+export type ClinicalCondition = typeof clinicalConditions.$inferSelect;
+export type InsertClinicalCondition = z.infer<typeof insertClinicalConditionSchema>;

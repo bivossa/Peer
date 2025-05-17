@@ -17,6 +17,10 @@ import {
   InsertProfessionalSpecialty,
   Professional,
   InsertProfessional,
+  ClinicalCategory,
+  InsertClinicalCategory,
+  ClinicalCondition,
+  InsertClinicalCondition,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -57,9 +61,152 @@ export interface IStorage {
   getProfessionals(specialtyId?: number, location?: { lat: number, lng: number, radius: number }): Promise<Professional[]>;
   getProfessionalById(id: number): Promise<Professional | undefined>;
   createProfessional(professional: InsertProfessional): Promise<Professional>;
+  
+  // Clinical conditions methods
+  getClinicalCategories(): Promise<ClinicalCategory[]>;
+  getClinicalCategory(id: number): Promise<ClinicalCategory | undefined>;
+  createClinicalCategory(category: InsertClinicalCategory): Promise<ClinicalCategory>;
+  getClinicalConditions(categoryId?: number): Promise<ClinicalCondition[]>;
+  getClinicalConditionById(id: number): Promise<ClinicalCondition | undefined>;
+  createClinicalCondition(condition: InsertClinicalCondition): Promise<ClinicalCondition>;
 }
 
 export class MemStorage implements IStorage {
+  // Implementazione metodi per le condizioni cliniche
+  async getClinicalCategories(): Promise<ClinicalCategory[]> {
+    return Array.from(this.clinicalCategories.values());
+  }
+
+  async getClinicalCategory(id: number): Promise<ClinicalCategory | undefined> {
+    return this.clinicalCategories.get(id);
+  }
+
+  async createClinicalCategory(category: InsertClinicalCategory): Promise<ClinicalCategory> {
+    const id = this.clinicalCategoryIdCounter++;
+    const newCategory: ClinicalCategory = { ...category, id };
+    this.clinicalCategories.set(id, newCategory);
+    return newCategory;
+  }
+
+  async getClinicalConditions(categoryId?: number): Promise<ClinicalCondition[]> {
+    if (categoryId) {
+      return Array.from(this.clinicalConditions.values())
+        .filter(condition => condition.categoryId === categoryId);
+    }
+    return Array.from(this.clinicalConditions.values());
+  }
+
+  async getClinicalConditionById(id: number): Promise<ClinicalCondition | undefined> {
+    return this.clinicalConditions.get(id);
+  }
+
+  async createClinicalCondition(condition: InsertClinicalCondition): Promise<ClinicalCondition> {
+    const id = this.clinicalConditionIdCounter++;
+    const newCondition: ClinicalCondition = { ...condition, id };
+    this.clinicalConditions.set(id, newCondition);
+    return newCondition;
+  }
+
+  private initializeClinicalData() {
+    // Categorie di condizioni cliniche
+    const reproductive = this.createClinicalCategory({
+      name: "Salute riproduttiva",
+      description: "Condizioni legate al sistema riproduttivo femminile"
+    });
+
+    const pregnancy = this.createClinicalCategory({
+      name: "Gravidanza",
+      description: "Condizioni e cambiamenti durante la gravidanza"
+    });
+
+    const menopause = this.createClinicalCategory({
+      name: "Menopausa",
+      description: "Condizioni legate alla menopausa e perimenopausa"
+    });
+
+    const breast = this.createClinicalCategory({
+      name: "Seno",
+      description: "Condizioni del seno e relativi sintomi"
+    });
+
+    // Condizioni cliniche con immagini
+    this.createClinicalCondition({
+      name: "Endometriosi",
+      description: "L'endometriosi è una condizione in cui il tessuto che normalmente riveste l'interno dell'utero (l'endometrio) cresce all'esterno dell'utero, tipicamente sulle ovaie, sulle tube di Falloppio e sul tessuto che riveste il bacino.",
+      symptoms: "Dolore pelvico, dolore durante il ciclo mestruale, dolore durante i rapporti, sanguinamento anomalo, problemi di fertilità",
+      categoryId: reproductive.id,
+      image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZW5kb21ldHJpb3Npc3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60",
+      treatmentInfo: "Trattamenti ormonali, chirurgia, gestione del dolore",
+      severity: "medium",
+      commonness: "common"
+    });
+
+    this.createClinicalCondition({
+      name: "Sindrome dell'ovaio policistico (PCOS)",
+      description: "La PCOS è una condizione ormonale comune che colpisce le donne in età riproduttiva, caratterizzata da livelli elevati di androgeni, cisti ovariche e irregolarità mestruali.",
+      symptoms: "Irregolarità mestruali, acne, crescita eccessiva di peli, aumento di peso, difficoltà a concepire",
+      categoryId: reproductive.id,
+      image: "https://images.unsplash.com/photo-1618615304438-db01b0a96573?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cG9seWN5c3RpYyUyMG92YXJ5JTIwc3luZHJvbWV8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60",
+      treatmentInfo: "Cambiamenti nello stile di vita, farmaci ormonali, gestione dei sintomi",
+      severity: "medium",
+      commonness: "common"
+    });
+
+    this.createClinicalCondition({
+      name: "Fibromi uterini",
+      description: "I fibromi uterini sono tumori benigni non cancerosi che crescono nell'utero o sulla parete uterina.",
+      symptoms: "Mestruazioni abbondanti, dolore pelvico, pressione, frequente necessità di urinare",
+      categoryId: reproductive.id,
+      image: "https://images.unsplash.com/photo-1581595219315-a187dd40c322?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      treatmentInfo: "Farmaci, procedure minimamente invasive, intervento chirurgico",
+      severity: "medium",
+      commonness: "common"
+    });
+
+    this.createClinicalCondition({
+      name: "Diabete gestazionale",
+      description: "Il diabete gestazionale è un tipo di diabete che si sviluppa durante la gravidanza in donne che non avevano il diabete prima.",
+      symptoms: "Spesso asintomatico, ma può causare sete eccessiva, minzione frequente e stanchezza",
+      categoryId: pregnancy.id,
+      image: "https://images.unsplash.com/photo-1579165466991-467135ad3110?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      treatmentInfo: "Dieta, esercizio fisico, monitoraggio della glicemia, insulina se necessario",
+      severity: "medium",
+      commonness: "occasional"
+    });
+
+    this.createClinicalCondition({
+      name: "Preeclampsia",
+      description: "La preeclampsia è una complicazione della gravidanza caratterizzata da pressione alta e segni di danno ad altri organi, spesso al fegato e ai reni.",
+      symptoms: "Pressione alta, proteine nelle urine, gonfiore, mal di testa, visione offuscata",
+      categoryId: pregnancy.id,
+      image: "https://images.unsplash.com/photo-1547489432-75c3789fe783?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      treatmentInfo: "Monitoraggio, parto anticipato se necessario, farmaci per la pressione",
+      severity: "high",
+      commonness: "occasional"
+    });
+
+    this.createClinicalCondition({
+      name: "Vampate di calore",
+      description: "Le vampate di calore sono un sintomo comune della menopausa, caratterizzate da una sensazione improvvisa di calore intenso nella parte superiore del corpo.",
+      symptoms: "Sensazione improvvisa di calore, rossore al viso e collo, sudorazione, battito cardiaco accelerato",
+      categoryId: menopause.id,
+      image: "https://images.unsplash.com/photo-1584286574620-3cb49d0b18d1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      treatmentInfo: "Terapia ormonale sostitutiva, cambiamenti nello stile di vita, farmaci non ormonali",
+      severity: "low",
+      commonness: "common"
+    });
+
+    this.createClinicalCondition({
+      name: "Mastite",
+      description: "La mastite è un'infiammazione del tessuto mammario che a volte coinvolge un'infezione. La condizione può verificarsi durante l'allattamento.",
+      symptoms: "Dolore, gonfiore, arrossamento, calore nel seno, febbre, sensazione di malessere",
+      categoryId: breast.id,
+      image: "https://images.unsplash.com/photo-1579165466676-349b282fb3ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      treatmentInfo: "Antibiotici, antidolorifici, continuare ad allattare o estrarre il latte",
+      severity: "medium",
+      commonness: "occasional"
+    });
+  }
   private users: Map<number, User>;
   private connections: Map<number, Connection>;
   private forumCategories: Map<number, ForumCategory>;
@@ -69,6 +216,8 @@ export class MemStorage implements IStorage {
   private courses: Map<number, Course>;
   private professionalSpecialties: Map<number, ProfessionalSpecialty>;
   private professionals: Map<number, Professional>;
+  private clinicalCategories: Map<number, ClinicalCategory>;
+  private clinicalConditions: Map<number, ClinicalCondition>;
   
   private userIdCounter: number;
   private connectionIdCounter: number;
@@ -79,6 +228,8 @@ export class MemStorage implements IStorage {
   private courseIdCounter: number;
   private professionalSpecialtyIdCounter: number;
   private professionalIdCounter: number;
+  private clinicalCategoryIdCounter: number;
+  private clinicalConditionIdCounter: number;
 
   constructor() {
     this.users = new Map();
@@ -90,6 +241,8 @@ export class MemStorage implements IStorage {
     this.courses = new Map();
     this.professionalSpecialties = new Map();
     this.professionals = new Map();
+    this.clinicalCategories = new Map();
+    this.clinicalConditions = new Map();
     
     this.userIdCounter = 1;
     this.connectionIdCounter = 1;
@@ -100,6 +253,8 @@ export class MemStorage implements IStorage {
     this.courseIdCounter = 1;
     this.professionalSpecialtyIdCounter = 1;
     this.professionalIdCounter = 1;
+    this.clinicalCategoryIdCounter = 1;
+    this.clinicalConditionIdCounter = 1;
     
     this.initializeData();
   }
