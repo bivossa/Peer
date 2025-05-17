@@ -7,6 +7,8 @@ import {
   insertConnectionSchema, 
   insertForumPostSchema,
   insertForumCommentSchema,
+  insertClinicalCategorySchema,
+  insertClinicalConditionSchema,
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -230,6 +232,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!professional) return res.status(404).json({ message: "Professional not found" });
     
     return res.json(professional);
+  });
+
+  // Clinical conditions routes
+  app.get("/api/clinical/categories", async (_req: Request, res: Response) => {
+    const categories = await storage.getClinicalCategories();
+    return res.json(categories);
+  });
+
+  app.get("/api/clinical/categories/:id", async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: "Invalid category ID" });
+    
+    const category = await storage.getClinicalCategory(id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+    
+    return res.json(category);
+  });
+
+  app.get("/api/clinical/conditions", async (req: Request, res: Response) => {
+    const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
+    
+    if (categoryId !== undefined && isNaN(categoryId)) {
+      return res.status(400).json({ message: "Invalid category ID" });
+    }
+    
+    const conditions = await storage.getClinicalConditions(categoryId);
+    return res.json(conditions);
+  });
+
+  app.get("/api/clinical/conditions/:id", async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: "Invalid condition ID" });
+    
+    const condition = await storage.getClinicalConditionById(id);
+    if (!condition) return res.status(404).json({ message: "Condition not found" });
+    
+    return res.json(condition);
+  });
+
+  app.post("/api/clinical/categories", async (req: Request, res: Response) => {
+    try {
+      const categoryData = insertClinicalCategorySchema.parse(req.body);
+      const category = await storage.createClinicalCategory(categoryData);
+      return res.status(201).json(category);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid category data", errors: error.errors });
+      }
+      return res.status(500).json({ message: "Failed to create category" });
+    }
+  });
+
+  app.post("/api/clinical/conditions", async (req: Request, res: Response) => {
+    try {
+      const conditionData = insertClinicalConditionSchema.parse(req.body);
+      const condition = await storage.createClinicalCondition(conditionData);
+      return res.status(201).json(condition);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid condition data", errors: error.errors });
+      }
+      return res.status(500).json({ message: "Failed to create condition" });
+    }
   });
 
   const httpServer = createServer(app);

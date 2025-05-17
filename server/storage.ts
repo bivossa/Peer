@@ -261,6 +261,7 @@ export class MemStorage implements IStorage {
 
   private initializeData() {
     // Initialize with sample data
+    this.initializeClinicalData();
     // Forum categories
     const pregnancy = this.createForumCategory({
       name: "Gravidanza",
