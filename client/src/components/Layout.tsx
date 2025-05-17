@@ -13,30 +13,32 @@ interface NavTabProps {
 
 const NavTab = ({ to, icon, label, isActive }: NavTabProps) => {
   return (
-    <Link href={to}>
-      <a className={cn(
+    <Link 
+      href={to}
+      className={cn(
         "py-4 px-1 font-medium flex items-center space-x-2 transition-colors",
         isActive 
           ? "text-primary border-b-2 border-primary" 
           : "text-neutral-600 hover:text-primary"
-      )}>
-        <i className={`fas ${icon}`}></i>
-        <span>{label}</span>
-      </a>
+      )}
+    >
+      <i className={`fas ${icon}`}></i>
+      <span>{label}</span>
     </Link>
   );
 };
 
 const MobileNavButton = ({ to, icon, label, isActive }: NavTabProps) => {
   return (
-    <Link href={to}>
-      <a className={cn(
+    <Link 
+      href={to}
+      className={cn(
         "nav-item flex flex-col items-center py-2 px-4 transition-colors",
         isActive ? "text-primary" : "text-neutral-400 hover:text-primary"
-      )}>
-        <i className={`fas ${icon} text-xl`}></i>
-        <span className="text-xs mt-1">{label}</span>
-      </a>
+      )}
+    >
+      <i className={`fas ${icon} text-xl`}></i>
+      <span className="text-xs mt-1">{label}</span>
     </Link>
   );
 };
