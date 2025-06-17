@@ -77,7 +77,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <Link href="/">
-              <a className="text-2xl font-heading font-bold text-primary">Harmonia</a>
+              <a className="text-2xl font-heading font-bold text-primary">Peer</a>
             </Link>
           </div>
           <div className="flex items-center space-x-4">
