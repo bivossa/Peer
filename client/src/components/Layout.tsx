@@ -71,11 +71,12 @@ export default function Layout({ children }: LayoutProps) {
     <div className="flex flex-col min-h-screen">
       {/* Header */}
       <header className={cn(
-        "bg-white fixed top-0 left-0 right-0 z-30 transition-shadow",
+        "bg-background fixed top-0 left-0 right-0 z-30 transition-shadow",
         scrolled ? "shadow-md" : "shadow-sm"
       )}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-12 bg-gradient-to-b from-primary to-primary/80 rounded-full transform rotate-45 shadow-sm"></div>
             <Link href="/">
               <a className="text-3xl brand-logo text-primary">Peer</a>
             </Link>
