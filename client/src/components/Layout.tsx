@@ -16,10 +16,10 @@ const NavTab = ({ to, icon, label, isActive }: NavTabProps) => {
     <Link 
       href={to}
       className={cn(
-        "py-4 px-1 font-medium flex items-center space-x-2 transition-colors",
+        "py-4 px-1 font-medium flex items-center space-x-2 transition-colors font-sans",
         isActive 
           ? "text-primary border-b-2 border-primary" 
-          : "text-neutral-600 hover:text-primary"
+          : "text-muted-foreground hover:text-primary"
       )}
     >
       <i className={`fas ${icon}`}></i>
@@ -34,11 +34,11 @@ const MobileNavButton = ({ to, icon, label, isActive }: NavTabProps) => {
       href={to}
       className={cn(
         "nav-item flex flex-col items-center py-2 px-4 transition-colors",
-        isActive ? "text-primary" : "text-neutral-400 hover:text-primary"
+        isActive ? "text-primary" : "text-muted-foreground hover:text-primary"
       )}
     >
       <i className={`fas ${icon} text-xl`}></i>
-      <span className="text-xs mt-1">{label}</span>
+      <span className="text-xs mt-1 font-medium">{label}</span>
     </Link>
   );
 };
@@ -77,21 +77,21 @@ export default function Layout({ children }: LayoutProps) {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <Link href="/">
-              <a className="text-2xl font-heading font-bold text-primary">Peer</a>
+              <a className="text-3xl brand-logo text-primary">Peer</a>
             </Link>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full bg-gray-100">
-              <Bell className="text-neutral-500 h-5 w-5" />
+            <button className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors">
+              <Bell className="text-muted-foreground h-5 w-5" />
             </button>
-            <div className="w-8 h-8 rounded-full bg-accent-200 flex items-center justify-center">
-              <span className="text-accent-700 text-sm font-medium">VR</span>
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-primary text-sm font-medium">VR</span>
             </div>
           </div>
         </div>
         
         {/* Section Tabs - Desktop */}
-        <div className="hidden md:flex border-b border-gray-200">
+        <div className="hidden md:flex border-b border-border">
           <div className="container mx-auto px-4 flex space-x-8">
             <NavTab 
               to="/" 
@@ -134,7 +134,7 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Mobile Navigation Bar - Fixed at Bottom */}
       {isMobile && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30">
+        <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30">
           <div className="flex justify-around">
             <MobileNavButton 
               to="/" 
