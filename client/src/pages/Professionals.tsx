@@ -20,7 +20,7 @@ export default function Professionals() {
   
   const { data: professionals, isLoading: loadingProfessionals } = useQuery({
     queryKey: ['/api/professionals', { 
-      specialtyId: specialty ? parseInt(specialty) : undefined,
+      specialtyId: specialty && specialty !== 'all' ? parseInt(specialty) : undefined,
       ...(userLocation ? {
         lat: userLocation.latitude,
         lng: userLocation.longitude,
@@ -29,11 +29,11 @@ export default function Professionals() {
     }],
   });
   
-  const filteredProfessionals = professionals?.filter(pro => 
+  const filteredProfessionals = Array.isArray(professionals) ? professionals.filter((pro: any) => 
     pro.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     pro.bio.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    pro.specializations.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+    pro.specializations.some((s: string) => s.toLowerCase().includes(searchQuery.toLowerCase()))
+  ) : [];
   
   const handleSearch = () => {
     // In a real app, this would trigger the query with new parameters
@@ -75,15 +75,15 @@ export default function Professionals() {
                 <SelectValue placeholder="Specialità" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tutte le specialità</SelectItem>
+                <SelectItem value="all">Tutte le specialità</SelectItem>
                 {loadingSpecialties ? (
                   <SelectItem disabled value="loading">Caricamento...</SelectItem>
                 ) : (
-                  specialties?.map((spec) => (
+                  Array.isArray(specialties) ? (specialties as any[]).map((spec: any) => (
                     <SelectItem key={spec.id} value={spec.id.toString()}>
                       {spec.name}
                     </SelectItem>
-                  ))
+                  )) : []
                 )}
               </SelectContent>
             </Select>
