@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Bell } from "lucide-react";
+import logo from '../assets/PEER_PITTO.png';
 
 interface NavTabProps {
   to: string;
@@ -76,7 +77,9 @@ export default function Layout({ children }: LayoutProps) {
       )}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-12 bg-gradient-to-b from-primary to-primary/80 rounded-full transform rotate-45 shadow-sm"></div>
+            <Link href="/">
+              <img src={logo} alt="Logo Peer" className="h-12 w-auto" />
+            </Link>
             <Link href="/">
               <a className="text-3xl brand-logo text-primary">Peer</a>
             </Link>
