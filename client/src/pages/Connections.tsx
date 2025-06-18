@@ -4,13 +4,14 @@ import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import ConnectionCard from "@/components/connections/ConnectionCard";
 import MatchItem from "@/components/connections/MatchItem";
-import { Sliders, MapPin } from "lucide-react";
+import { Sliders, MapPin, X } from "lucide-react";
 import { IconButton } from "@/components/ui/icon-button";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "@/hooks/use-location";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Default user ID (in a real app, this would come from auth)
 const CURRENT_USER_ID = 1;
@@ -19,15 +20,28 @@ export default function Connections() {
   const { toast } = useToast();
   const { userLocation, locationError } = useLocation();
   const [distance, setDistance] = useState(10);
+  const [isDistanceModalOpen, setIsDistanceModalOpen] = useState(false);
+  
+  // Debug logging
+  console.log('Connections - userLocation:', userLocation);
+  console.log('Connections - locationError:', locationError);
   
   // Get nearby users
-  const { data: nearbyUsers, isLoading: loadingNearby } = useQuery({
+  const { data: nearbyUsers = [], isLoading: loadingNearby } = useQuery<any[]>({
     queryKey: ['/api/users', CURRENT_USER_ID, 'nearby', { distance }],
-    enabled: !!userLocation,
+    queryFn: async () => {
+      const res = await apiRequest('GET', `/api/users/${CURRENT_USER_ID}/nearby?distance=${distance}`);
+      return res.json(); // <-- qui ottieni il vero array di utenti!
+    },
+    enabled: !!userLocation || !!locationError,
   });
   
+  // Debug logging
+  console.log('Connections - nearbyUsers:', nearbyUsers);
+  console.log('Connections - loadingNearby:', loadingNearby);
+  
   // Get user matches
-  const { data: matches, isLoading: loadingMatches } = useQuery({
+  const { data: matches = [], isLoading: loadingMatches } = useQuery<any[]>({
     queryKey: ['/api/users', CURRENT_USER_ID, 'matches'],
   });
   
@@ -96,6 +110,19 @@ export default function Connections() {
           <IconButton icon={<Sliders className="h-5 w-5 text-neutral-500" />} />
           <IconButton icon={<MapPin className="h-5 w-5 text-neutral-500" />} />
         </div>
+      </div>
+
+      {/* Distance filter - clickable badge */}
+      <div className="flex mb-6 items-center">
+        <span className="text-sm text-neutral-500 mr-2">Raggio di ricerca:</span>
+        <Badge 
+          variant="secondary" 
+          className="text-secondary-700 flex items-center cursor-pointer hover:bg-secondary-200 transition-colors"
+          onClick={() => setIsDistanceModalOpen(true)}
+        >
+          {distance} km
+          <i className="fas fa-chevron-down ml-2 text-xs"></i>
+        </Badge>
       </div>
 
       {/* Location filter chip */}
@@ -188,6 +215,65 @@ export default function Connections() {
           </div>
         )}
       </div>
+
+      {/* Distance Modal */}
+      <Dialog open={isDistanceModalOpen} onOpenChange={setIsDistanceModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>Raggio di ricerca</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsDistanceModalOpen(false)}
+                className="h-6 w-6"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-neutral-600">Distanza massima</span>
+              <span className="text-lg font-semibold text-primary">{distance} km</span>
+            </div>
+            
+            <div className="space-y-4">
+              <input
+                type="range"
+                min={1}
+                max={2000}
+                step={1}
+                value={distance}
+                onChange={e => setDistance(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+              />
+              
+              <div className="flex justify-between text-xs text-neutral-500">
+                <span>1 km</span>
+                <span>500 km</span>
+                <span>1000 km</span>
+                <span>2000 km</span>
+              </div>
+            </div>
+            
+            <div className="flex justify-end mt-6 space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => setIsDistanceModalOpen(false)}
+              >
+                Annulla
+              </Button>
+              <Button
+                onClick={() => setIsDistanceModalOpen(false)}
+              >
+                Applica
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

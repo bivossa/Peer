@@ -95,28 +95,28 @@ export default function Layout({ children }: LayoutProps) {
         <div className="hidden md:flex border-b border-border">
           <div className="container mx-auto px-4 flex space-x-8">
             <NavTab 
-              to="/" 
-              icon="fa-users" 
-              label="Connessioni" 
-              isActive={getIsActive("/")} 
-            />
-            <NavTab 
               to="/forum" 
               icon="fa-comments" 
               label="Forum" 
               isActive={getIsActive("/forum")} 
             />
             <NavTab 
-              to="/courses" 
-              icon="fa-graduation-cap" 
-              label="Corsi" 
-              isActive={getIsActive("/courses")} 
-            />
-            <NavTab 
               to="/professionals" 
               icon="fa-stethoscope" 
               label="Professionisti" 
               isActive={getIsActive("/professionals")} 
+            />
+            <NavTab 
+              to="/" 
+              icon="fa-users" 
+              label="Connessioni" 
+              isActive={getIsActive("/")} 
+            />
+            <NavTab 
+              to="/courses" 
+              icon="fa-graduation-cap" 
+              label="Corsi" 
+              isActive={getIsActive("/courses")} 
             />
             <NavTab 
               to="/clinical" 
@@ -129,7 +129,7 @@ export default function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main content area with bottom padding for mobile nav */}
-      <main className="flex-grow pt-24 pb-20 md:pb-6">
+      <main className="flex-grow pt-32 pb-20 md:pb-6">
         {children}
       </main>
 
@@ -138,28 +138,28 @@ export default function Layout({ children }: LayoutProps) {
         <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30">
           <div className="flex justify-around">
             <MobileNavButton 
-              to="/" 
-              icon="fa-users" 
-              label="Connetti" 
-              isActive={getIsActive("/")} 
-            />
-            <MobileNavButton 
               to="/forum" 
               icon="fa-comments" 
               label="Forum" 
               isActive={getIsActive("/forum")} 
             />
             <MobileNavButton 
-              to="/courses" 
-              icon="fa-graduation-cap" 
-              label="Corsi" 
-              isActive={getIsActive("/courses")} 
-            />
-            <MobileNavButton 
               to="/professionals" 
               icon="fa-stethoscope" 
               label="Esperti" 
               isActive={getIsActive("/professionals")} 
+            />
+            <MobileNavButton 
+              to="/" 
+              icon="fa-users" 
+              label="Connetti" 
+              isActive={getIsActive("/")} 
+            />
+            <MobileNavButton 
+              to="/courses" 
+              icon="fa-graduation-cap" 
+              label="Corsi" 
+              isActive={getIsActive("/courses")} 
             />
             <MobileNavButton 
               to="/clinical" 
